@@ -5,19 +5,22 @@ import { useEthers } from "@usedapp/core";
 import Loader from "./components/Loader";
 import Exchange from "./components/Exchange";
 import { usePools } from "./hooks/usePools";
+import { useNavigate } from "react-router-dom";
 
 const App = () => {
   const { account } = useEthers();
   const [loading, pools] = usePools();
+  const navigate = useNavigate();
 
   return (
     <div className="flex justify-center min-h-screen sm:px-16 px-6 bg-site-black">
       <div className="flex justify-between items-center flex-col max-w-[1280px] w-full">
-        <header className="flex flex-row justify-between items-center w-full sm:py-10 py-6">
+        <header className="flex flex-row justify-between items-center w-full py-6">
           <img
             src={uniswapLogo}
             alt="uniswap-logo"
-            className="w-30 h-30 object-contain"
+            className="w-30 h-30 object-contain cursor-pointer"
+            onClick={() => navigate("/")}
           />
           <WalletButton />
         </header>
