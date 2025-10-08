@@ -162,7 +162,7 @@ const Exchange = ({ pools }) => {
           onClick={onSwapRequested}
           className={`${
             canSwap ? "bg-site-pink text-white" : "bg-site-dim2 text-site-dim2"
-          } border-none outline-none px-6 py-2 font-poppins font-bold text-lg rounded-2xl leading-[24px] transition-all min-h-[56px]`}
+          } border-none outline-none px-6 py-2 font-poppins font-bold text-lg rounded-2xl leading-[24px] transition-all min-h-[56px] cursor-pointer`}
         >
           {isSwapping
             ? "Swapping..."
