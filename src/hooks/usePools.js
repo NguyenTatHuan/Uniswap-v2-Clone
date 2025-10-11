@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import { useEffect, useState } from 'react';
 import { useConfig } from '@usedapp/core';
-import { ROUTER_ADDRESS } from '../config';
+import { ROUTER_ADDRESS } from '../config/config';
 import { getRouterInfo } from '../utils/getRouterInfo';
 import { getFactoryInfo } from '../utils/getFactoryInfo';
 

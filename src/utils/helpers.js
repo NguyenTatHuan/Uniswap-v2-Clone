@@ -3,7 +3,7 @@ import { Contract } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 import { useEffect } from "react"
 import abis from "../abis/abis";
-import { ROUTER_ADDRESS } from "../config";
+import { ROUTER_ADDRESS } from "../config/config";
 
 export const getAvailableTokens = (pools) =>
     pools.reduce((prev, curr) => {
@@ -36,33 +36,57 @@ export const isOperationPending = (operationState) => operationState.status === 
 export const isOperationFailed = (operationState) => operationState.status === "Fail" || operationState.status === "Exception";
 export const isOperationSucceeded = (operationState) => operationState.status === "Success";
 
-export const getFailureMessage = (swapApproveState, swapExecuteState) => {
-    if (isOperationPending(swapApproveState) || isOperationPending(swapExecuteState)) {
-        return undefined;
-    }
+//export const getFailureMessage = (swapApproveState, swapExecuteState) => {
+//    if (isOperationPending(swapApproveState) || isOperationPending(swapExecuteState)) {
+//        return undefined;
+//    }
+//
+//    if (isOperationFailed(swapApproveState)) {
+//        return "Approval failed - " + swapApproveState.errorMessage;
+//    }
+//
+//    if (isOperationFailed(swapExecuteState)) {
+//        return "Swap failed - " + swapExecuteState.errorMessage;
+//    }
+//
+//    return undefined;
+//};
 
-    if (isOperationFailed(swapApproveState)) {
-        return "Approval failed - " + swapApproveState.errorMessage;
-    }
+//export const getSuccessMessage = (swapApproveState, swapExecuteState) => {
+//    if (isOperationPending(swapExecuteState) || isOperationPending(swapApproveState)) {
+//        return undefined;
+//    }
+//
+//    if (isOperationSucceeded(swapExecuteState)) {
+//        return "Swap executed successfully";
+//    }
+//
+//    if (isOperationSucceeded(swapApproveState)) {
+//        return "Approval successful";
+//    }
+//
+//    return undefined;
+//};
 
-    if (isOperationFailed(swapExecuteState)) {
-        return "Swap failed - " + swapExecuteState.errorMessage;
+export const getFailureMessage = (...states) => {
+    if (states.some((state) => isOperationPending(state))) return undefined;
+
+    const failedState = states.find((state) => isOperationFailed(state));
+
+    if (failedState) {
+        return `${failedState.transactionName || "Transaction"} failed - ${failedState.errorMessage || ""}`;
     }
 
     return undefined;
 };
 
-export const getSuccessMessage = (swapApproveState, swapExecuteState) => {
-    if (isOperationPending(swapExecuteState) || isOperationPending(swapApproveState)) {
-        return undefined;
-    }
+export const getSuccessMessage = (...states) => {
+    if (states.some((state) => isOperationPending(state))) return undefined;
 
-    if (isOperationSucceeded(swapExecuteState)) {
-        return "Swap executed successfully";
-    }
+    const succeededState = [...states].reverse().find((state) => isOperationSucceeded(state));
 
-    if (isOperationSucceeded(swapApproveState)) {
-        return "Approval successful";
+    if (succeededState) {
+        return `${succeededState.transactionName || "Transaction"} executed successfully`;
     }
 
     return undefined;

@@ -36,7 +36,7 @@ const AmountIn = ({
       />
 
       <div className="relative" onClick={() => setShowList(!showList)}>
-        <button className="flex flex-row items-center bg-site-dim2 py-2 px-4 rounded-xl font-poppins font-bold text-white">
+        <button className="flex flex-row items-center bg-site-dim2 py-2 px-4 rounded-xl font-poppins font-bold text-white cursor-pointer">
           {activeCurrency}
           <img
             src={chevronDown}
@@ -50,7 +50,7 @@ const AmountIn = ({
         {showList && (
           <ul
             ref={ref}
-            className="absolute z-10 right-0 bg-site-black border-[1px] border-site-dim2 w-full mt-2 rounded-lg min-w-[170px] overflow-hidden"
+            className="absolute z-10 right-0 bg-site-black border-[1px] border-site-dim2 w-full mt-2 rounded-lg min-w-[170px] max-h-36 overflow-y-auto hide-scrollbar"
           >
             {Object.entries(currencies).map(([token, tokenName], index) => (
               <li

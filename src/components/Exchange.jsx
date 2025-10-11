@@ -16,35 +16,62 @@ import {
   isOperationPending,
 } from "../utils/helpers";
 import { Contract, ethers } from "ethers";
-import { ROUTER_ADDRESS } from "../config";
+import { ROUTER_ADDRESS } from "../config/config";
 import abis from "../abis/abis";
 import AmountIn from "./AmountIn";
 import AmountOut from "./AmountOut";
 import Balance from "./Balance";
 
 const Exchange = ({ pools }) => {
-  const { account } = useEthers();
+  const { account, library } = useEthers();
   const [fromValue, setFromValue] = useState("0");
   const [fromToken, setFromToken] = useState(pools[0].token0Address); // initialFromToken
+  const [decimalsFrom, setDecimalsFrom] = useState(18);
   const [toToken, setToToken] = useState("");
   const [resetState, setResetState] = useState(false);
 
-  const fromValueBigNumber = parseUnits(fromValue || "0"); // converse the string to bigNumber
+  const fetchDecimals = async () => {
+    if (!library) return;
+    try {
+      const fromTokenContract = new ethers.Contract(
+        fromToken,
+        ERC20.abi,
+        library
+      );
+      const decimalsFromValue = await fromTokenContract.decimals();
+      setDecimalsFrom(decimalsFromValue);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    fetchDecimals();
+  }, [fromToken, library]);
+
+  const fromValueBigNumber = parseUnits(fromValue || "0", decimalsFrom); // converse the string to bigNumber
   const availableTokens = getAvailableTokens(pools);
   const counterpartTokens = getCounterpartTokens(pools, fromToken);
   const pairAddress =
     findPoolByTokens(pools, fromToken, toToken)?.address ?? "";
 
-  const routerContract = new Contract(ROUTER_ADDRESS, abis.router01);
-  const fromTokenContract = new Contract(fromToken, ERC20.abi);
-  const fromTokenBalance = useTokenBalance(fromToken, account);
-  const toTokenBalance = useTokenBalance(toToken, account);
+  const routerContract = new Contract(
+    ROUTER_ADDRESS,
+    abis.router01,
+    library?.getSigner()
+  );
+  const fromTokenContract = new Contract(
+    fromToken,
+    ERC20.abi,
+    library?.getSigner()
+  );
   const tokenAllowance =
-    useTokenAllowance(fromToken, account, ROUTER_ADDRESS) || parseUnits("0");
+    useTokenAllowance(fromToken, account, ROUTER_ADDRESS) ||
+    parseUnits("0", decimalsFrom);
   const approvedNeeded = fromValueBigNumber.gt(tokenAllowance);
-  const formValueIsGreaterThan0 = fromValueBigNumber.gt(parseUnits("0"));
+  const formValueIsGreaterThan0 = fromValueBigNumber.gt(
+    parseUnits("0", decimalsFrom)
+  );
   const hasEnoughBalance = fromValueBigNumber.lte(
-    fromTokenBalance ?? parseUnits("0")
+    useTokenBalance(fromToken, account) ?? parseUnits("0", decimalsFrom)
   );
 
   // approve initiating a contract call (similar to use state) -> gives the state and the sender...
@@ -84,7 +111,8 @@ const Exchange = ({ pools }) => {
       0,
       [fromToken, toToken],
       account,
-      Math.floor(Date.now() / 1000) + 60 * 20
+      Math.floor(Date.now() / 1000) + 60 * 20,
+      { gasLimit: 5_000_000 }
     ).then((_) => {
       setFromValue("0");
     });
@@ -94,7 +122,7 @@ const Exchange = ({ pools }) => {
     const trimmedValue = value.trim();
 
     try {
-      trimmedValue && parseUnits(value);
+      trimmedValue && parseUnits(value, decimalsFrom);
       setFromValue(value);
     } catch (e) {}
   };
@@ -128,7 +156,7 @@ const Exchange = ({ pools }) => {
           currencies={availableTokens}
           isSwapping={isSwapping && hasEnoughBalance}
         />
-        <Balance tokenBalance={fromTokenBalance} />
+        <Balance tokenBalance={useTokenBalance(fromToken, account)} />
       </div>
 
       <div className="mb-8 w-[100%]">
@@ -141,7 +169,7 @@ const Exchange = ({ pools }) => {
           onSelect={onToTokenChange}
           currencies={counterpartTokens}
         />
-        <Balance tokenBalance={toTokenBalance} />
+        <Balance tokenBalance={useTokenBalance(toToken, account)} />
       </div>
 
       {approvedNeeded && !isSwapping ? (
@@ -173,9 +201,13 @@ const Exchange = ({ pools }) => {
       )}
 
       {failureMessage && !resetState ? (
-        <p className="font-poppins font-lg text-white font-bold mt-7">{failureMessage}</p>
+        <p className="font-poppins font-lg text-red-600 font-bold mt-7">
+          {failureMessage}
+        </p>
       ) : successMessage ? (
-        <p className="font-poppins font-lg text-white font-bold mt-7">{successMessage}</p>
+        <p className="font-poppins font-lg text-green-600 font-bold mt-7">
+          {successMessage}
+        </p>
       ) : (
         ""
       )}

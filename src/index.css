@@ -14,6 +14,19 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Firefox */
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+}
+
 .gradient_btn {
   background: linear-gradient(
     103.91deg,
