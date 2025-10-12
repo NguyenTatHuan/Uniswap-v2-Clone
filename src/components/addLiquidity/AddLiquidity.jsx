@@ -1,15 +1,15 @@
 import React from "react";
-import Loader from "./Loader";
-import Exchange from "./Exchange";
+import AddLiquidityInput from "./AddLiquidityInput";
+import Loader from "../Loader";
 
-const Home = ({ account, loading, pools }) => {
+const AddLiquidity = ({ account, loading, pools }) => {
   return (
     <div className="flex flex-col items-center w-full mb-10">
       <h1 className="text-white font-poppins font-black text-5xl tracking-wide">
         Uniswap
       </h1>
       <p className="text-dim-white font-poppins font-medium mt-3 text-base">
-        Exchange tokens in seconds
+        Add Liquidity in seconds
       </p>
       <div className="mt-10 w-full flex justify-center">
         <div className="relative md:max-w-[700px] md:min-w-[500px] min-w-full gradient-border p-[2px] rounded-3xl">
@@ -20,7 +20,7 @@ const Home = ({ account, loading, pools }) => {
             ) : loading ? (
               <Loader title="Loading pools, please wait!" />
             ) : (
-              <Exchange pools={pools} />
+              <AddLiquidityInput pools={pools} />
             )}
           </div>
           <div className="blue_gradient" />
@@ -30,4 +30,4 @@ const Home = ({ account, loading, pools }) => {
   );
 };
 
-export default Home;
+export default AddLiquidity;

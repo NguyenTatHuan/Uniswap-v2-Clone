@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useOnClickOutside } from "../utils/helpers";
-import { chevronDown } from "../assets";
+import { useOnClickOutside } from "../../utils/helpers";
+import { chevronDown } from "../../assets";
 
 const AmountIn = ({
   value,

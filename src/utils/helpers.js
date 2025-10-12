@@ -36,38 +36,6 @@ export const isOperationPending = (operationState) => operationState.status === 
 export const isOperationFailed = (operationState) => operationState.status === "Fail" || operationState.status === "Exception";
 export const isOperationSucceeded = (operationState) => operationState.status === "Success";
 
-//export const getFailureMessage = (swapApproveState, swapExecuteState) => {
-//    if (isOperationPending(swapApproveState) || isOperationPending(swapExecuteState)) {
-//        return undefined;
-//    }
-//
-//    if (isOperationFailed(swapApproveState)) {
-//        return "Approval failed - " + swapApproveState.errorMessage;
-//    }
-//
-//    if (isOperationFailed(swapExecuteState)) {
-//        return "Swap failed - " + swapExecuteState.errorMessage;
-//    }
-//
-//    return undefined;
-//};
-
-//export const getSuccessMessage = (swapApproveState, swapExecuteState) => {
-//    if (isOperationPending(swapExecuteState) || isOperationPending(swapApproveState)) {
-//        return undefined;
-//    }
-//
-//    if (isOperationSucceeded(swapExecuteState)) {
-//        return "Swap executed successfully";
-//    }
-//
-//    if (isOperationSucceeded(swapApproveState)) {
-//        return "Approval successful";
-//    }
-//
-//    return undefined;
-//};
-
 export const getFailureMessage = (...states) => {
     if (states.some((state) => isOperationPending(state))) return undefined;
 
@@ -122,4 +90,26 @@ export const useOnClickOutside = (ref, handler) => {
             document.removeEventListener("touchstart", listener);
         };
     }, [ref, handler])
+}
+
+export const useAmount1 = (pairAddress, amount0, token0, token1) => {
+    const isValidAmount0 = amount0.gt(parseUnits("0"));
+    const areParamsValid = !!(pairAddress && isValidAmount0 && token0 && token1);
+
+    const { value, error } =
+        useCall(
+            areParamsValid && {
+                contract: new Contract(pairAddress, abis.pair),
+                method: "getReserves",
+                args: [],
+            }
+        ) ?? {};
+
+    if (error || !value) return parseUnits("0");
+
+    let [reserve0, reserve1] = value;
+    if (token0.toLowerCase() > token1.toLowerCase()) [reserve0, reserve1] = [reserve1, reserve0]; // ensure reverse0 is always for token0
+    if (reserve0.isZero()) return parseUnits("0");
+    const amount1 = amount0.mul(reserve1).div(reserve0);
+    return amount1;
 }

@@ -14,13 +14,13 @@ import {
   getFailureMessage,
   getSuccessMessage,
   isOperationPending,
-} from "../utils/helpers";
+} from "../../utils/helpers";
 import { Contract, ethers } from "ethers";
-import { ROUTER_ADDRESS } from "../config/config";
-import abis from "../abis/abis";
+import { ROUTER_ADDRESS } from "../../config/config";
+import abis from "../../abis/abis";
 import AmountIn from "./AmountIn";
 import AmountOut from "./AmountOut";
-import Balance from "./Balance";
+import Balance from "../Balance";
 
 const Exchange = ({ pools }) => {
   const { account, library } = useEthers();

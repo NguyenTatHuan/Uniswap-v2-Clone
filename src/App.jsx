@@ -2,9 +2,9 @@ import React from "react";
 import { useEthers } from "@usedapp/core";
 import { usePools } from "./hooks/usePools";
 import Header from "./components/Header";
-import Home from "./components/Home";
+import Home from "./components/exchange/Home";
 import { Route, Routes } from "react-router-dom";
-import AddLiquidity from "./components/AddLiquidity";
+import AddLiquidity from "./components/addLiquidity/AddLiquidity";
 
 const App = () => {
   const { account } = useEthers();
@@ -21,7 +21,7 @@ const App = () => {
           />
           <Route
             path="/liquidity/add"
-            element={<AddLiquidity account={account} />}
+            element={<AddLiquidity account={account} loading={loading} pools={pools} />}
           />
         </Routes>
       </div>

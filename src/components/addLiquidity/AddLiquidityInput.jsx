@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AmountIn from "./AmountIn";
-import Balance from "./Balance";
+import Balance from "../Balance";
 import {
   ERC20,
   useContractFunction,
@@ -8,21 +7,25 @@ import {
   useTokenAllowance,
   useTokenBalance,
 } from "@usedapp/core";
-import { tokens } from "../config/tokens";
+import { tokens } from "../../config/tokens";
 import { parseUnits } from "ethers/lib/utils";
-import { ROUTER_ADDRESS } from "../config/config";
+import { ROUTER_ADDRESS } from "../../config/config";
 import { Contract, ethers } from "ethers";
-import abis from "../abis/abis";
+import abis from "../../abis/abis";
 import {
+  findPoolByTokens,
   getFailureMessage,
   getSuccessMessage,
   isOperationPending,
-} from "../utils/helpers";
+} from "../../utils/helpers";
+import Amount0 from "./Amount0";
+import Amount1 from "./Amount1";
 
-const LiquidityInput = () => {
+const AddLiquidityInput = ({ pools }) => {
   const { account, library } = useEthers();
-  const [token0, setToken0] = useState(Object.keys(tokens)[0]);
-  const [token1, setToken1] = useState(Object.keys(tokens)[1]);
+
+  const [token0, setToken0] = useState(pools[0].token0Address);
+  const [token1, setToken1] = useState(pools[0].token1Address);
   const [amount0, setAmount0] = useState("0");
   const [amount1, setAmount1] = useState("0");
   const [decimals0, setDecimals0] = useState(18);
@@ -42,22 +45,29 @@ const LiquidityInput = () => {
       const decimals1Value = await token1Contract.decimals();
       setDecimals0(decimals0Value);
       setDecimals1(decimals1Value);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error fetching decimals:", error);
+    }
   };
 
   useEffect(() => {
     fetchDecimals();
   }, [token0, token1, library]);
 
+  const pairAddress = findPoolByTokens(pools, token0, token1)?.address ?? "";
+
   const amount0BigNumber = parseUnits(amount0 || "0", decimals0);
   const amount1BigNumber = parseUnits(amount1 || "0", decimals1);
 
-  const allowance0 =
-    useTokenAllowance(token0, account, ROUTER_ADDRESS) ||
-    parseUnits("0", decimals0);
-  const allowance1 =
-    useTokenAllowance(token1, account, ROUTER_ADDRESS) ||
-    parseUnits("0", decimals1);
+  const token0Allowance = useTokenAllowance(token0, account, ROUTER_ADDRESS);
+  const token1Allowance = useTokenAllowance(token1, account, ROUTER_ADDRESS);
+  const token0Balance = useTokenBalance(token0, account);
+  const token1Balance = useTokenBalance(token1, account);
+
+  const allowance0 = token0Allowance || parseUnits("0", decimals0);
+  const allowance1 = token1Allowance || parseUnits("0", decimals1);
+  const balance0 = token0Balance || parseUnits("0", decimals0);
+  const balance1 = token1Balance || parseUnits("0", decimals1);
 
   const approvedToken0Needed = amount0BigNumber.gt(allowance0);
   const approvedToken1Needed = amount1BigNumber.gt(allowance1);
@@ -67,12 +77,7 @@ const LiquidityInput = () => {
     amount1BigNumber.gt(parseUnits("0", decimals1));
 
   const hasEnoughBalance =
-    amount0BigNumber.lte(
-      useTokenBalance(token0, account) ?? parseUnits("0", decimals0)
-    ) &&
-    amount1BigNumber.lte(
-      useTokenBalance(token1, account) ?? parseUnits("0", decimals1)
-    );
+    amount0BigNumber.lte(balance0) && amount1BigNumber.lte(balance1);
 
   const routerContract = new Contract(
     ROUTER_ADDRESS,
@@ -107,8 +112,10 @@ const LiquidityInput = () => {
     isOperationPending(addApproveState0) ||
     isOperationPending(addApproveState1);
   const isAdding = isOperationPending(addExecuteState);
+
   const canApprove =
     !isApproving && (approvedToken0Needed || approvedToken1Needed);
+
   const canAddLiquidity =
     !approvedToken0Needed &&
     !approvedToken1Needed &&
@@ -141,6 +148,7 @@ const LiquidityInput = () => {
       token0.toLowerCase() > token1.toLowerCase()
         ? [token1, token0]
         : [token0, token1];
+
     let [amountADesired, amountBDesired] =
       token0.toLowerCase() > token1.toLowerCase()
         ? [amount1BigNumber, amount0BigNumber]
@@ -176,7 +184,9 @@ const LiquidityInput = () => {
       );
       setAmount0("0");
       setAmount1("0");
-    } catch (err) {}
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
@@ -185,8 +195,8 @@ const LiquidityInput = () => {
         setResetState(true);
         setAmount0("0");
         setAmount1("0");
-        setToken0(Object.keys(tokens)[0]);
-        setToken1(Object.keys(tokens)[1]);
+        setToken0(pools[0].token0Address);
+        setToken1(pools[0].token1Address);
       }, 5000);
     }
   }, [failureMessage, successMessage]);
@@ -194,26 +204,28 @@ const LiquidityInput = () => {
   return (
     <div className="flex flex-col w-full items-center">
       <div className="mb-8">
-        <AmountIn
+        <Amount0
           value={amount0}
           onChange={(value) => setAmount0(value.trim())}
           currencyValue={token0}
           onSelect={(value) => setToken0(value)}
           currencies={tokens}
-          isSwapping={false}
         />
-        <Balance tokenBalance={useTokenBalance(token0, account)} />
+        <Balance tokenBalance={token0Balance} />
       </div>
+
       <div className="mb-8 w-[100%]">
-        <AmountIn
-          value={amount1}
+        <Amount1
+          token0={token0}
+          token1={token1}
+          amount0={amount0BigNumber}
           onChange={(value) => setAmount1(value.trim())}
+          pairContract={pairAddress}
           currencyValue={token1}
           onSelect={(value) => setToken1(value)}
           currencies={filteredTokensForToken1}
-          isSwapping={false}
         />
-        <Balance tokenBalance={useTokenBalance(token1, account)} />
+        <Balance tokenBalance={token1Balance} />
       </div>
 
       {canApprove ? (
@@ -257,4 +269,4 @@ const LiquidityInput = () => {
   );
 };
 
-export default LiquidityInput;
+export default AddLiquidityInput;
