@@ -18,12 +18,17 @@ export const getPairsInfo = async (pairAddresses, web3) => {
         const token0Name = await token0Contract.methods.name().call();
         const token1Name = await token1Contract.methods.name().call();
 
+        const token0Symbol = await token0Contract.methods.symbol().call();
+        const token1Symbol = await token1Contract.methods.symbol().call();
+
         pairsInfo.push({
             address: pairAddress,
             token0Address,
             token1Address,
             token0Name,
-            token1Name
+            token1Name,
+            token0Symbol,
+            token1Symbol
         })
     }
 

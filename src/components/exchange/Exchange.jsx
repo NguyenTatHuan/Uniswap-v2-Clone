@@ -40,7 +40,9 @@ const Exchange = ({ pools }) => {
       );
       const decimalsFromValue = await fromTokenContract.decimals();
       setDecimalsFrom(decimalsFromValue);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error fetching decimals:", error);
+    }
   };
 
   useEffect(() => {
@@ -63,6 +65,7 @@ const Exchange = ({ pools }) => {
     ERC20.abi,
     library?.getSigner()
   );
+  
   const tokenAllowance =
     useTokenAllowance(fromToken, account, ROUTER_ADDRESS) ||
     parseUnits("0", decimalsFrom);

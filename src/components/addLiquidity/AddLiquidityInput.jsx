@@ -24,8 +24,8 @@ import Amount1 from "./Amount1";
 const AddLiquidityInput = ({ pools }) => {
   const { account, library } = useEthers();
 
-  const [token0, setToken0] = useState(pools[0].token0Address);
-  const [token1, setToken1] = useState(pools[0].token1Address);
+  const [token0, setToken0] = useState(Object.keys(tokens)[0]);
+  const [token1, setToken1] = useState(Object.keys(tokens)[1]);
   const [amount0, setAmount0] = useState("0");
   const [amount1, setAmount1] = useState("0");
   const [decimals0, setDecimals0] = useState(18);
@@ -195,9 +195,9 @@ const AddLiquidityInput = ({ pools }) => {
         setResetState(true);
         setAmount0("0");
         setAmount1("0");
-        setToken0(pools[0].token0Address);
-        setToken1(pools[0].token1Address);
-      }, 5000);
+        setToken0(Object.keys(tokens)[0]);
+        setToken1(Object.keys(tokens)[1]);
+      }, 2000);
     }
   }, [failureMessage, successMessage]);
 
