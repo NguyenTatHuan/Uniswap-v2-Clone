@@ -1,15 +1,15 @@
 import React from "react";
-import Loader from "../Loader";
-import RemoveLiquidityInput from "./RemoveLiquidityInput";
+import Loader from "../components/Loader";
+import Exchange from "../components/exchange/Exchange";
 
-const RemoveLiquidity = ({ account, loading, pools }) => {
+const Home = ({ account, loading, pools }) => {
   return (
     <div className="flex flex-col items-center w-full mb-10">
       <h1 className="text-white font-poppins font-black text-5xl tracking-wide">
         Uniswap
       </h1>
       <p className="text-dim-white font-poppins font-medium mt-3 text-base">
-        Remove Liquidity in seconds
+        Exchange tokens in seconds
       </p>
       <div className="mt-10 w-full flex justify-center">
         <div className="relative md:max-w-[700px] md:min-w-[500px] min-w-full gradient-border p-[2px] rounded-3xl">
@@ -20,7 +20,7 @@ const RemoveLiquidity = ({ account, loading, pools }) => {
             ) : loading ? (
               <Loader title="Loading pools, please wait!" />
             ) : (
-              <RemoveLiquidityInput pools={pools} />
+              <Exchange pools={pools} />
             )}
           </div>
           <div className="blue_gradient" />
@@ -30,4 +30,4 @@ const RemoveLiquidity = ({ account, loading, pools }) => {
   );
 };
 
-export default RemoveLiquidity;
+export default Home;

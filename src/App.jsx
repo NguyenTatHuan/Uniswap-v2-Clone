@@ -2,10 +2,10 @@ import React from "react";
 import { useEthers } from "@usedapp/core";
 import { usePools } from "./hooks/usePools";
 import Header from "./components/Header";
-import Home from "./components/exchange/Home";
 import { Route, Routes } from "react-router-dom";
-import AddLiquidity from "./components/addLiquidity/AddLiquidity";
-import RemoveLiquidity from "./components/removeLiquidity/RemoveLiquidity";
+import Home from "./pages/Home";
+import AddLiquidity from "./pages/AddLiquidity";
+import RemoveLiquidity from "./pages/RemoveLiquidity";
 
 const App = () => {
   const { account } = useEthers();
