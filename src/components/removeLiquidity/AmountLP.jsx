@@ -7,9 +7,7 @@ const AmountLP = ({ value, onChange }) => {
         placeholder="0.0"
         type="number"
         value={value}
-        onChange={(e) =>
-          typeof onChange === "function" && onChange(e.target.value)
-        }
+        onChange={onChange}
         className="w-full flex-1 bg-transparent outline-none font-poppins font-black text-2xl text-white"
       />
 

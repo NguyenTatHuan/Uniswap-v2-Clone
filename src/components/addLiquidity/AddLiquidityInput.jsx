@@ -250,7 +250,11 @@ const AddLiquidityInput = ({ pools }) => {
               : "bg-site-dim2 text-site-dim2"
           } border-none outline-none px-6 py-2 font-poppins font-bold text-lg rounded-2xl leading-[24px] transition-all min-h-[56px] cursor-pointer`}
         >
-          {isAdding ? "Adding..." : "Add Liquidity"}
+          {isAdding
+            ? "Adding..."
+            : hasEnoughBalance
+            ? "Add Liquidity"
+            : "Insufficient balance"}
         </button>
       )}
 

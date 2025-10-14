@@ -1,6 +1,6 @@
-import React from 'react'
-import Loader from '../Loader'
-import RemoveLiquidityInput from './RemoveLiquidityInput'
+import React from "react";
+import Loader from "../Loader";
+import RemoveLiquidityInput from "./RemoveLiquidityInput";
 
 const RemoveLiquidity = ({ account, loading, pools }) => {
   return (
@@ -27,7 +27,7 @@ const RemoveLiquidity = ({ account, loading, pools }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default RemoveLiquidity
+export default RemoveLiquidity;
