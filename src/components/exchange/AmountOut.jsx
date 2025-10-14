@@ -55,17 +55,17 @@ const AmountOut = ({
             ref={ref}
             className="absolute z-10 right-0 bg-site-black border-[1px] border-site-dim2 w-full mt-2 rounded-lg min-w-[170px] max-h-36 overflow-y-auto hide-scrollbar"
           >
-            {Object.entries(currencies).map(([token, tokenName], index) => (
+            {Object.entries(currencies).map(([token, tokenSymbol], index) => (
               <li
                 key={index}
                 className="font-poppins font-medium text-base text-white hover:text-dim-white px-5 py-3 hover:bg-site-dim2 cursor-pointer"
                 onClick={() => {
                   if (typeof onSelect === "function") onSelect(token);
-                  setActiveCurrency(tokenName);
+                  setActiveCurrency(tokenSymbol);
                   setShowList(false);
                 }}
               >
-                {tokenName}
+                {tokenSymbol}
               </li>
             ))}
           </ul>

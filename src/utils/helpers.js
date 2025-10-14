@@ -7,8 +7,8 @@ import { ROUTER_ADDRESS } from "../config/config";
 
 export const getAvailableTokens = (pools) =>
     pools.reduce((prev, curr) => {
-        prev[curr.token0Address] = curr.token0Name;
-        prev[curr.token1Address] = curr.token1Name;
+        prev[curr.token0Address] = curr.token0Symbol;
+        prev[curr.token1Address] = curr.token1Symbol;
         return prev;
     }, {});
 
@@ -16,9 +16,9 @@ export const getCounterpartTokens = (pools, fromToken) => pools
     .filter((cur) => cur.token0Address === fromToken || cur.token1Address)
     .reduce((prev, curr) => {
         if (curr.token0Address === fromToken) {
-            prev[curr.token1Address] = curr.token1Name;
+            prev[curr.token1Address] = curr.token1Symbol;
         } else if (curr.token1Address === fromToken) {
-            prev[curr.token0Address] = curr.token0Name;
+            prev[curr.token0Address] = curr.token0Symbol;
         }
         return prev;
     }, {});
