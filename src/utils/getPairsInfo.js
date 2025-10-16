@@ -1,3 +1,4 @@
+import { formatUnits } from 'ethers/lib/utils';
 import abis from '../abis/abis';
 
 export const getPairsInfo = async (pairAddresses, web3) => {
@@ -21,6 +22,16 @@ export const getPairsInfo = async (pairAddresses, web3) => {
         const token0Symbol = await token0Contract.methods.symbol().call();
         const token1Symbol = await token1Contract.methods.symbol().call();
 
+        const reserves = await pair.methods.getReserves().call();
+        const reserve0BigNumber = reserves._reserve0;
+        const reserve1BigNumber = reserves._reserve1;
+        const reserve0 = parseFloat(formatUnits(reserve0BigNumber, 18));
+        const reserve1 = parseFloat(formatUnits(reserve1BigNumber, 18));
+        const price = reserve1 / reserve0;
+
+        const totalSupplyBigNumber = await pair.methods.totalSupply().call();
+        const totalSupply = parseFloat(formatUnits(totalSupplyBigNumber, 18));
+
         pairsInfo.push({
             address: pairAddress,
             token0Address,
@@ -28,7 +39,11 @@ export const getPairsInfo = async (pairAddresses, web3) => {
             token0Name,
             token1Name,
             token0Symbol,
-            token1Symbol
+            token1Symbol,
+            reserve0,
+            reserve1,
+            price,
+            totalSupply
         })
     }
 
