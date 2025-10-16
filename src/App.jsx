@@ -38,7 +38,7 @@ const App = () => {
             }
           />
           <Route
-            path="/explore/pools"
+            path="/pools"
             element={<Pool account={account} loading={loading} pools={pools} />}
           />
         </Routes>
