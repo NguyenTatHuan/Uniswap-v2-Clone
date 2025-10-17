@@ -117,13 +117,25 @@ const RemoveLiquidityInput = ({ pools }) => {
   };
 
   useEffect(() => {
-    if (successMessage || failureMessage) {
+    if (removeExecuteState.status === "Success") {
       setTimeout(() => {
         setResetState(true);
+        setSelectedPool(pools[0]);
         setAmountLP("0");
-      }, 5000);
+      }, 2000);
     }
-  }, [successMessage, failureMessage]);
+
+    if (
+      failureMessage ||
+      removeApproveState.status === "Success" ||
+      removeApproveState.status === "Fail" ||
+      removeExecuteState.status === "Fail"
+    ) {
+      setTimeout(() => {
+        setResetState(true);
+      }, 2000);
+    }
+  }, [failureMessage, removeApproveState.status, removeExecuteState.status]);
 
   return (
     <div className="flex flex-col w-full items-center">

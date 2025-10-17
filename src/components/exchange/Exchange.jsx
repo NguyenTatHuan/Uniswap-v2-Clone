@@ -65,7 +65,7 @@ const Exchange = ({ pools }) => {
     ERC20.abi,
     library?.getSigner()
   );
-  
+
   const tokenAllowance =
     useTokenAllowance(fromToken, account, ROUTER_ADDRESS) ||
     parseUnits("0", decimalsFrom);
@@ -139,14 +139,20 @@ const Exchange = ({ pools }) => {
   };
 
   useEffect(() => {
-    if (failureMessage || successMessage) {
+    if (swapExecuteState.status === "Success") {
       setTimeout(() => {
         setResetState(true);
         setFromValue("0");
         setToToken("");
-      }, 5000);
+      }, 2000);
     }
-  }, [failureMessage, successMessage]);
+
+    if (failureMessage || swapApproveState.status === "Success") {
+      setTimeout(() => {
+        setResetState(true);
+      }, 2000);
+    }
+  }, [failureMessage, swapApproveState.status, swapExecuteState.status]);
 
   return (
     <div className="flex flex-col w-full items-center">

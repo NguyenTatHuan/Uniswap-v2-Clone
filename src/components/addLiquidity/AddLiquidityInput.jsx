@@ -190,7 +190,7 @@ const AddLiquidityInput = ({ pools }) => {
   };
 
   useEffect(() => {
-    if (failureMessage || successMessage) {
+    if (addExecuteState.status === "Success") {
       setTimeout(() => {
         setResetState(true);
         setAmount0("0");
@@ -199,7 +199,22 @@ const AddLiquidityInput = ({ pools }) => {
         setToken1(Object.keys(tokens)[1]);
       }, 2000);
     }
-  }, [failureMessage, successMessage]);
+
+    if (
+      failureMessage ||
+      addApproveState0.status === "Success" ||
+      addApproveState1.status === "Success"
+    ) {
+      setTimeout(() => {
+        setResetState(true);
+      }, 2000);
+    }
+  }, [
+    failureMessage,
+    addApproveState0.status,
+    addApproveState1.status,
+    addExecuteState.status,
+  ]);
 
   return (
     <div className="flex flex-col w-full items-center">
