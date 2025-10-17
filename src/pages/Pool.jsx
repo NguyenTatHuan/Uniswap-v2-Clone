@@ -20,8 +20,8 @@ const Pool = ({ account, loading, pools }) => {
           <div className="pink_gradient" />
           <div
             className={`${
-              loading || !account ? "min-h-[400px]" : "w-full"
-            } bg-site-black backdrop-blur-[4px] rounded-3xl shadow-card flex`}
+              loading || !account ? "min-h-[400px] flex" : "w-full max-h-[400px]"
+            } bg-site-black backdrop-blur-[4px] rounded-3xl shadow-card overflow-y-auto hide-scrollbar`}
           >
             {!account ? (
               <Loader title="Please connect your wallet." />
