@@ -107,7 +107,6 @@ const Exchange = ({ pools }) => {
     swapApproveSend(ROUTER_ADDRESS, ethers.constants.MaxUint256);
   };
 
-  // https://docs.uniswap.org/protocol/V2/reference/smart-contracts/router-02#swapexacttokensfortokens
   const onSwapRequested = () => {
     swapExecuteSend(
       fromValueBigNumber,
@@ -130,18 +129,11 @@ const Exchange = ({ pools }) => {
     } catch (e) {}
   };
 
-  const onFromTokenChange = (value) => {
-    setFromToken(value);
-  };
-
-  const onToTokenChange = (value) => {
-    setToToken(value);
-  };
-
   useEffect(() => {
     if (swapExecuteState.status === "Success") {
       setTimeout(() => {
         setResetState(true);
+        setFromToken(pools[0].token0Address);
         setFromValue("0");
         setToToken("");
       }, 2000);
@@ -161,7 +153,7 @@ const Exchange = ({ pools }) => {
           value={fromValue}
           onChange={onFromValueChange}
           currencyValue={fromToken}
-          onSelect={onFromTokenChange}
+          onSelect={(value) => setFromToken(value)}
           currencies={availableTokens}
           isSwapping={isSwapping && hasEnoughBalance}
         />
@@ -175,7 +167,7 @@ const Exchange = ({ pools }) => {
           amountIn={fromValueBigNumber}
           pairContract={pairAddress}
           currencyValue={toToken}
-          onSelect={onToTokenChange}
+          onSelect={(value) => setToToken(value)}
           currencies={counterpartTokens}
         />
         <Balance tokenBalance={useTokenBalance(toToken, account)} />
