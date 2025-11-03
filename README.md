@@ -63,14 +63,13 @@ This repository reproduces the main components of **Uniswap V2** — a constant-
 
 ```
 contracts/
-  ├─ core/                # Pair, Factory implementation
   ├─ interfaces/          # External/internal interfaces
   ├─ libraries/           # Math and helper libraries (e.g., SafeMath-like utils)
-  └─ tokens/              # Test ERC20 tokens
+  ├─ test/                # Test ERC20 tokens
+  └─ core-contracts/      # Factory, Pair, Router contracts
 
 scripts/
-  ├─ deploy.js            # Example deployment script
-  └─ helpers.js           # Helper utilities for scripts
+  └─ deploy.js            # Example deployment script
 
 test/
   └─ *.test.js            # Unit tests
